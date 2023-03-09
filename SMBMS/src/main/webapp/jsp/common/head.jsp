@@ -16,7 +16,7 @@
     <h1>超市订单管理系统</h1>
     <div class="publicHeaderR">
         <p><span>下午好！</span><span style="color: #fff21b"> ${userSession.userName}</span> , 欢迎你！</p>
-        <a href="${pageContext.request.contextPath}/user/logout.do">退出</a>
+        <a href="${pageContext.request.contextPath}/logout.do">退出</a>
     </div>
 </header>
 <!--时间-->
