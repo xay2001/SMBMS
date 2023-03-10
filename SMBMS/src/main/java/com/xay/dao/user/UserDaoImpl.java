@@ -10,14 +10,14 @@ import java.sql.SQLException;
 
 public class UserDaoImpl implements UserDao {
     @Override
-    public User getLoginUser(Connection connection, String userCode) throws SQLException {
+    public User getLoginUser(Connection connection, String userCode,String userPassword) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         User user = null;
 
         if (connection != null) {
-            String sql = "SELECT * FROM smbms_user WHERE userCode=?";
-            Object[] params = {userCode};
+            String sql = "SELECT * FROM smbms_user WHERE userCode=? AND userPassword = ?";
+            Object[] params = {userCode,userPassword};
             resultSet = BaseDao.execute(connection, sql, params, resultSet, preparedStatement);
             if (resultSet.next()) {
                 user = new User();

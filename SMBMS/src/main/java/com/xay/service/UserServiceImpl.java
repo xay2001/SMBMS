@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         try {
             connection = BaseDao.getConnection();
             //通过业务层调用对应的具体的数据库操作
-            user = userDao.getLoginUser(connection, userCode);
+            user = userDao.getLoginUser(connection, userCode,password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }finally {
