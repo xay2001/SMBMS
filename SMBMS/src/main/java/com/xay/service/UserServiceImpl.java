@@ -51,10 +51,31 @@ public class UserServiceImpl implements UserService {
         return flag;
     }
 
+    @Override
+    public int getUserCount(String userName, int userRole) {
+        Connection connection = null;
+        int userCount = 0;
+        try {
+            connection = BaseDao.getConnection();
+            userCount = userDao.getUserCount(connection, userName, userRole);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return userCount;
+    }
+
     @Test
     public void test(){
         UserServiceImpl userService = new UserServiceImpl();
         User admin = userService.login("admin", "756");
         System.out.println(admin.getUserPassword());
+    }
+    @Test
+    public void test2(){
+        UserServiceImpl userService = new UserServiceImpl();
+        int userCount = userService.getUserCount(null, 2);
+        System.out.println("经理:"+userCount);
     }
 }
