@@ -49,4 +49,14 @@ http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout.do</url-pattern>
     </servlet-mapping>
+
+    <!--  修改密码UserServlet -->
+    <servlet>
+        <servlet-name>UserServlet</servlet-name>
+        <servlet-class>com.xay.servlet.user.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserServlet</servlet-name>
+        <url-pattern>/jsp/user.do</url-pattern>
+    </servlet-mapping>
 </web-app>
