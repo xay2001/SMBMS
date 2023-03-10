@@ -2,6 +2,8 @@ package com.xay.service;
 
 import com.xay.pojo.User;
 
+import java.util.List;
+
 public interface UserService {
     //用户登录
     public User login(String userCode,String password);
@@ -10,4 +12,7 @@ public interface UserService {
 
     //查询记录数
     int getUserCount(String userName,int userRole);
+
+    //根据条件查询用户列表
+    public List<User> getUserList(String queryUserName, int queryUserRole, int currentPageNo, int pageSize);
 }

@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserDaoImpl implements UserDao {
     @Override
@@ -85,5 +86,56 @@ public class UserDaoImpl implements UserDao {
             BaseDao.closeResource(null,preparedStatement,resultSet);
         }
         return count;
+    }
+
+    @Override
+    public List<User> getUserList(Connection connection, String userName, int userRole, int currentPageNo, int pageSize) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<User> userList = new ArrayList<User>();
+        if(connection!=null){
+            StringBuffer sql = new StringBuffer();
+            sql.append("select u.*,r.roleName as userRoleName from smbms_user u ,smbms_role r where u.userRole = r.id");
+            List<Object> list  = new ArrayList<Object>();
+            if(!StringUtils.isNullOrEmpty(userName)){
+                sql.append(" and u.userName like ?");
+                list.add("'%"+userName+"%'");
+            }
+            if(userRole>0){
+                sql.append(" and u.userRole=?");
+                list.add(userRole);
+            }
+            //在数据库中分页使用limit startIndex,pageSize; 开始的索引=（当前的页码-1）*每页显示的条数
+            //0,5  1  0  01234
+            //5,5  2  5  56789
+            sql.append(" order by creationDate DESC limit ?,?");
+            currentPageNo = (currentPageNo-1)*pageSize;
+            list.add(currentPageNo);
+            list.add(pageSize);
+
+            Object[] params = list.toArray();
+            System.out.println("sql ----- >"+sql.toString());
+            resultSet = BaseDao.execute(connection,sql.toString(),params,resultSet,preparedStatement);
+            while (resultSet.next()){
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setUserCode(resultSet.getString("userCode"));
+                user.setUserName(resultSet.getString("userName"));
+                user.setUserPassword(resultSet.getString("userPassword"));
+                user.setGender(resultSet.getInt("gender"));
+                user.setBirthday(resultSet.getDate("birthday"));
+                user.setPhone(resultSet.getString("phone"));
+                user.setAddress(resultSet.getString("address"));
+                user.setUserRole(resultSet.getInt("userRole"));
+                user.setCreatedBy(resultSet.getInt("createdBy"));
+                user.setModifyBy(resultSet.getInt("modifyBy"));
+                user.setCreationDate(resultSet.getTimestamp("creationDate"));
+                user.setModifyDate(resultSet.getTimestamp("modifyDate"));
+                user.setUserRoleName(resultSet.getString("userRoleName"));
+                userList.add(user);
+            }
+            BaseDao.closeResource(null,preparedStatement,resultSet);
+        }
+        return userList;
     }
 }
