@@ -100,7 +100,7 @@ public class UserDaoImpl implements UserDao {
             List<Object> list  = new ArrayList<Object>();
             if(!StringUtils.isNullOrEmpty(userName)){
                 sql.append(" and u.userName like ?");
-                list.add("'%"+userName+"%'");
+                list.add("%"+userName+"%");
             }
             if(userRole>0){
                 sql.append(" and u.userRole=?");
@@ -138,5 +138,21 @@ public class UserDaoImpl implements UserDao {
             BaseDao.closeResource(null,preparedStatement,resultSet);
         }
         return userList;
+    }
+
+    @Override
+    public int add(Connection connection, User user) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        int updateRows = 0;
+        if(connection != null){
+            String sql = "insert into smbms_user (userCode, userName, userPassword, gender, birthday" +
+                    ", phone, address, userRole, createdBy," +
+                    "creationDate)" + "values (?,?,?,?,?,?,?,?,?,?)";
+            Object[] params = {user.getUserCode(),user.getUserName(),user.getUserPassword(),user.getGender(),user.getBirthday(),user.getPhone(),user.getAddress(),user.getUserRole(),user.getCreatedBy(),user.getCreationDate()};
+            System.out.println(sql);
+            updateRows = BaseDao.execute(connection, sql, params, preparedStatement);
+            BaseDao.closeResource(null,preparedStatement,null);
+        }
+        return updateRows;
     }
 }

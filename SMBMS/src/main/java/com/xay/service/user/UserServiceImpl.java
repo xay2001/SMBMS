@@ -4,6 +4,7 @@ import com.xay.dao.BaseDao;
 import com.xay.dao.user.UserDao;
 import com.xay.dao.user.UserDaoImpl;
 import com.xay.pojo.User;
+import com.xay.util.Constants;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -84,6 +85,35 @@ public class UserServiceImpl implements UserService {
             BaseDao.closeResource(connection,null,null);
         }
         return userList;
+    }
+
+    @Override
+    public boolean add(User user) {
+        boolean flag = false;
+        Connection connection = null;
+        try{
+            connection = BaseDao.getConnection();
+            connection.setAutoCommit(false);
+            int updateRows = userDao.add(connection,user);
+            connection.commit();
+            if(updateRows > 0){
+                flag=true;
+                System.out.println("add success");
+            }else {
+                System.out.println("add failed");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            try {
+                System.out.println("rollback======");
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return flag;
     }
 
     @Test
