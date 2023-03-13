@@ -5,6 +5,7 @@ import com.mysql.cj.util.StringUtils;
 import com.xay.pojo.Role;
 import com.xay.pojo.User;
 import com.xay.service.role.RoleServiceImpl;
+import com.xay.service.user.UserService;
 import com.xay.service.user.UserServiceImpl;
 import com.xay.util.Constants;
 import com.xay.util.PageSupport;
@@ -35,9 +36,11 @@ public class UserServlet extends HttpServlet {
         } else if (method.equals("add") && method != null) {
             this.add(req, resp);
         } else if (method.equals("deluser") && method != null) {
-            this.deluser(req,resp);
-        } else if (method.equals("modify") && method!=null) {
-            this.getUserById(req,resp,"usermodify.jsp");
+            this.deluser(req, resp);
+        } else if (method.equals("modify") && method != null) {
+            this.getUserById(req, resp, "usermodify.jsp");
+        } else if (method.equals("ucexist") && method != null) {
+            this.userCodeExist(req, resp);
         }
     }
 
@@ -213,24 +216,25 @@ public class UserServlet extends HttpServlet {
             req.getRequestDispatcher("useradd.jsp").forward(req, resp);
         }
     }
+
     //删除用户
-    public void deluser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+    public void deluser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String id = req.getParameter("uid");
         Integer delId = 0;
         try {
             delId = Integer.parseInt(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             delId = 0;
         }
-        HashMap<String,String> resultMap = new HashMap<String, String>();
-        if (delId<0){
-            resultMap.put("delResult","notexist");
-        }else {
+        HashMap<String, String> resultMap = new HashMap<String, String>();
+        if (delId < 0) {
+            resultMap.put("delResult", "notexist");
+        } else {
             UserServiceImpl userService = new UserServiceImpl();
-            if(userService.deleteUserById(delId)){
-                resultMap.put("delResult","true");
-            }else{
-                resultMap.put("delResult","false");
+            if (userService.deleteUserById(delId)) {
+                resultMap.put("delResult", "true");
+            } else {
+                resultMap.put("delResult", "false");
             }
         }
 
@@ -241,15 +245,36 @@ public class UserServlet extends HttpServlet {
         writer.flush();
         writer.close();
     }
+
     //修改用户
-    public void getUserById(HttpServletRequest req, HttpServletResponse resp,String url)throws ServletException, IOException{
+    public void getUserById(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
         String id = req.getParameter("uid");
-        if(!StringUtils.isNullOrEmpty(id)){
+        if (!StringUtils.isNullOrEmpty(id)) {
             //调用后台方法得到user对象
             UserServiceImpl userService = new UserServiceImpl();
             User user = userService.getUserById(id);
-            req.setAttribute("user",user);
-            req.getRequestDispatcher(url).forward(req,resp);
+            req.setAttribute("user", user);
+            req.getRequestDispatcher(url).forward(req, resp);
+        }
+    }
+
+    public void userCodeExist(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //判断用户账号是否可用
+        String userCode = req.getParameter("userCode");
+        String userPassword = req.getParameter("userPassword");
+
+        HashMap<String, String> resultMap = new HashMap<String, String>();
+        if (StringUtils.isNullOrEmpty(userCode)) {
+            //userCode == null || userCode.equals("")
+            resultMap.put("userCode", "exist");
+        } else {
+            UserService userService = new UserServiceImpl();
+            User user = userService.selectUserCodeExist(userCode, userPassword);
+            if (null != user) {
+                resultMap.put("userCode", "exist");
+            } else {
+                resultMap.put("userCode", "notexist");
+            }
         }
     }
 }

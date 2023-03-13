@@ -22,4 +22,6 @@ public interface UserService {
     boolean deleteUserById(Integer delId);
 
     User getUserById(String id);
+
+    User selectUserCodeExist(String userCode ,String userPassword);
 }
