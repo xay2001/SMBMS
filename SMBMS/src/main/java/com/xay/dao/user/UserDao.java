@@ -19,4 +19,6 @@ public interface UserDao {
     public List<User> getUserList(Connection connection,String userName ,int userRole,int currentPageNo,int pageSize) throws SQLException;
 
     int add(Connection connection, User user) throws SQLException;
+
+    int deleteUserById(Connection connection, Integer delId) throws SQLException;
 }

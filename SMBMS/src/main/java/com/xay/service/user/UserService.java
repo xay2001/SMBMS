@@ -18,4 +18,6 @@ public interface UserService {
     public List<User> getUserList(String queryUserName, int queryUserRole, int currentPageNo, int pageSize);
 
     boolean add(User user);
+
+    boolean deleteUserById(Integer delId);
 }

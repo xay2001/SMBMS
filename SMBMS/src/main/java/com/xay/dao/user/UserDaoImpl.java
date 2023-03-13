@@ -14,14 +14,14 @@ import java.util.List;
 
 public class UserDaoImpl implements UserDao {
     @Override
-    public User getLoginUser(Connection connection, String userCode,String userPassword) throws SQLException {
+    public User getLoginUser(Connection connection, String userCode, String userPassword) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         User user = null;
 
         if (connection != null) {
             String sql = "SELECT * FROM smbms_user WHERE userCode=? AND userPassword = ?";
-            Object[] params = {userCode,userPassword};
+            Object[] params = {userCode, userPassword};
             resultSet = BaseDao.execute(connection, sql, params, resultSet, preparedStatement);
             if (resultSet.next()) {
                 user = new User();
@@ -52,39 +52,40 @@ public class UserDaoImpl implements UserDao {
         int execute = 0;
         if (connection != null) {
             String sql = "update smbms_user set userPassword = ? where id = ?";
-            Object params[] = {password,id};
+            Object params[] = {password, id};
             execute = BaseDao.execute(connection, sql, params, preparedStatement);
             BaseDao.closeResource(null, preparedStatement, null);
         }
         return execute;
     }
+
     //根据用户名或者角色查询用户总数
     @Override
     public int getUserCount(Connection connection, String userName, int userRole) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         int count = 0;
-        if(connection!=null){
+        if (connection != null) {
             StringBuffer sql = new StringBuffer();
             sql.append("SELECT count(1) as count from smbms_user u,smbms_role r where u.userRole = r.id");
             ArrayList<Object> list = new ArrayList<Object>();//存放我们的参数
-            if(!StringUtils.isNullOrEmpty(userName)){
+            if (!StringUtils.isNullOrEmpty(userName)) {
                 sql.append(" AND u.userName like ?");
-                list.add("'%"+userName+"%'");
+                list.add("'%" + userName + "%'");
             }
-            if(userRole>0){ //where trim
+            if (userRole > 0) { //where trim
                 sql.append(" AND u.userRole = ?");
                 list.add(userRole);//index:1
             }
             //list转换为数组
             Object[] params = list.toArray();
 
-            System.out.println("UserDaoImpl->getUserCount："+sql.toString());//输出完整的SQL语句
-            resultSet = BaseDao.execute(connection,sql.toString(),params,resultSet,preparedStatement);
-            if(resultSet.next()){
+            System.out.println("UserDaoImpl->getUserCount：" + sql.toString());//输出完整的SQL语句
+            resultSet = BaseDao.execute(connection, sql.toString(), params, resultSet, preparedStatement);
+            if (resultSet.next()) {
                 count = resultSet.getInt("count");//从结果集中获取数量
             }
-            BaseDao.closeResource(null,preparedStatement,resultSet);
+            BaseDao.closeResource(null, preparedStatement, resultSet);
         }
         return count;
     }
@@ -94,15 +95,15 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         List<User> userList = new ArrayList<User>();
-        if(connection!=null){
+        if (connection != null) {
             StringBuffer sql = new StringBuffer();
             sql.append("select u.*,r.roleName as userRoleName from smbms_user u ,smbms_role r where u.userRole = r.id");
-            List<Object> list  = new ArrayList<Object>();
-            if(!StringUtils.isNullOrEmpty(userName)){
+            List<Object> list = new ArrayList<Object>();
+            if (!StringUtils.isNullOrEmpty(userName)) {
                 sql.append(" and u.userName like ?");
-                list.add("%"+userName+"%");
+                list.add("%" + userName + "%");
             }
-            if(userRole>0){
+            if (userRole > 0) {
                 sql.append(" and u.userRole=?");
                 list.add(userRole);
             }
@@ -110,14 +111,14 @@ public class UserDaoImpl implements UserDao {
             //0,5  1  0  01234
             //5,5  2  5  56789
             sql.append(" order by creationDate DESC limit ?,?");
-            currentPageNo = (currentPageNo-1)*pageSize;
+            currentPageNo = (currentPageNo - 1) * pageSize;
             list.add(currentPageNo);
             list.add(pageSize);
 
             Object[] params = list.toArray();
-            System.out.println("sql ----- >"+sql.toString());
-            resultSet = BaseDao.execute(connection,sql.toString(),params,resultSet,preparedStatement);
-            while (resultSet.next()){
+            System.out.println("sql ----- >" + sql.toString());
+            resultSet = BaseDao.execute(connection, sql.toString(), params, resultSet, preparedStatement);
+            while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getInt("id"));
                 user.setUserCode(resultSet.getString("userCode"));
@@ -135,7 +136,7 @@ public class UserDaoImpl implements UserDao {
                 user.setUserRoleName(resultSet.getString("userRoleName"));
                 userList.add(user);
             }
-            BaseDao.closeResource(null,preparedStatement,resultSet);
+            BaseDao.closeResource(null, preparedStatement, resultSet);
         }
         return userList;
     }
@@ -144,13 +145,27 @@ public class UserDaoImpl implements UserDao {
     public int add(Connection connection, User user) throws SQLException {
         PreparedStatement preparedStatement = null;
         int updateRows = 0;
-        if(connection != null){
+        if (connection != null) {
             String sql = "insert into smbms_user (userCode, userName, userPassword, gender, birthday" +
                     ", phone, address, userRole, createdBy," +
                     "creationDate)" + "values (?,?,?,?,?,?,?,?,?,?)";
-            Object[] params = {user.getUserCode(),user.getUserName(),user.getUserPassword(),user.getGender(),user.getBirthday(),user.getPhone(),user.getAddress(),user.getUserRole(),user.getCreatedBy(),user.getCreationDate()};
+            Object[] params = {user.getUserCode(), user.getUserName(), user.getUserPassword(), user.getGender(), user.getBirthday(), user.getPhone(), user.getAddress(), user.getUserRole(), user.getCreatedBy(), user.getCreationDate()};
             System.out.println(sql);
             updateRows = BaseDao.execute(connection, sql, params, preparedStatement);
+            BaseDao.closeResource(null, preparedStatement, null);
+        }
+        return updateRows;
+    }
+
+    @Override
+    public int deleteUserById(Connection connection, Integer delId) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        int updateRows = 0;
+        if (connection != null) {
+            String sql = "delete from smbms_user where id = ?";
+            Object[] params = {delId};
+            System.out.println("删除：" + sql);
+            updateRows = BaseDao.execute(connection,sql,params,preparedStatement);
             BaseDao.closeResource(null,preparedStatement,null);
         }
         return updateRows;

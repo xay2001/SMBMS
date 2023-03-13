@@ -116,6 +116,23 @@ public class UserServiceImpl implements UserService {
         return flag;
     }
 
+    @Override
+    public boolean deleteUserById(Integer delId) {
+        Connection connection = null;
+        boolean flag = false;
+        try {
+            connection = BaseDao.getConnection();
+            if (userDao.deleteUserById(connection, delId) > 0) {
+                flag = true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return flag;
+    }
+
     @Test
     public void test(){
         UserServiceImpl userService = new UserServiceImpl();

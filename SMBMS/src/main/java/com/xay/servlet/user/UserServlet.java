@@ -33,7 +33,9 @@ public class UserServlet extends HttpServlet {
         } else if (method.equals("query") && method != null) {
             this.query(req, resp);
         } else if (method.equals("add") && method != null) {
-            this.add(req,resp);
+            this.add(req, resp);
+        } else if (method.equals("deluser") && method != null) {
+            this.deluser(req,resp);
         }
     }
 
@@ -201,12 +203,40 @@ public class UserServlet extends HttpServlet {
         user.setPhone(phone);
         user.setUserRole(Integer.valueOf(userRole));
         user.setCreationDate(new Date());
-        user.setCreatedBy(((User)req.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        user.setCreatedBy(((User) req.getSession().getAttribute(Constants.USER_SESSION)).getId());
         UserServiceImpl userService = new UserServiceImpl();
-        if(userService.add(user)){
-            resp.sendRedirect(req.getContextPath()+"/jsp/user.do?method=query");
-        }else {
-            req.getRequestDispatcher("useradd.jsp").forward(req,resp);
+        if (userService.add(user)) {
+            resp.sendRedirect(req.getContextPath() + "/jsp/user.do?method=query");
+        } else {
+            req.getRequestDispatcher("useradd.jsp").forward(req, resp);
         }
+    }
+    //删除用户
+    public void deluser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String id = req.getParameter("uid");
+        Integer delId = 0;
+        try {
+            delId = Integer.parseInt(id);
+        }catch (Exception e){
+            delId = 0;
+        }
+        HashMap<String,String> resultMap = new HashMap<String, String>();
+        if (delId<0){
+            resultMap.put("delResult","notexist");
+        }else {
+            UserServiceImpl userService = new UserServiceImpl();
+            if(userService.deleteUserById(delId)){
+                resultMap.put("delResult","true");
+            }else{
+                resultMap.put("delResult","false");
+            }
+        }
+
+        //把resultMap转换成json对象输出
+        resp.setContentType("application/json");
+        PrintWriter writer = resp.getWriter();
+        writer.write(JSONArray.toJSONString(resultMap));
+        writer.flush();
+        writer.close();
     }
 }
