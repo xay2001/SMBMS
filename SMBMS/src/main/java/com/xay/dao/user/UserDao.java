@@ -1,5 +1,6 @@
 package com.xay.dao.user;
 
+import com.xay.pojo.Role;
 import com.xay.pojo.User;
 import com.xay.util.Constants;
 

@@ -1,5 +1,6 @@
-package com.xay.service;
+package com.xay.service.user;
 
+import com.xay.pojo.Role;
 import com.xay.pojo.User;
 
 import java.util.List;

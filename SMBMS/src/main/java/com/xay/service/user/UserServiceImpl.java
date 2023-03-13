@@ -1,4 +1,4 @@
-package com.xay.service;
+package com.xay.service.user;
 
 import com.xay.dao.BaseDao;
 import com.xay.dao.user.UserDao;

@@ -2,6 +2,7 @@ package com.xay.dao.user;
 
 import com.mysql.cj.util.StringUtils;
 import com.xay.dao.BaseDao;
+import com.xay.pojo.Role;
 import com.xay.pojo.User;
 
 import java.sql.Connection;

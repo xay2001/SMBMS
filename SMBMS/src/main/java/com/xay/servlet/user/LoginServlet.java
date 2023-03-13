@@ -1,7 +1,7 @@
 package com.xay.servlet.user;
 
 import com.xay.pojo.User;
-import com.xay.service.UserServiceImpl;
+import com.xay.service.user.UserServiceImpl;
 import com.xay.util.Constants;
 
 import javax.servlet.ServletException;
