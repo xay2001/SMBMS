@@ -26,11 +26,11 @@ public class UserServiceImpl implements UserService {
         try {
             connection = BaseDao.getConnection();
             //通过业务层调用对应的具体的数据库操作
-            user = userDao.getLoginUser(connection, userCode,password);
+            user = userDao.getLoginUser(connection, userCode, password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return user;
     }
@@ -42,13 +42,13 @@ public class UserServiceImpl implements UserService {
         //修改密码
         try {
             connection = BaseDao.getConnection();
-            if(userDao.updatePwd(connection,id,password)>0){
+            if (userDao.updatePwd(connection, id, password) > 0) {
                 flag = true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return flag;
     }
@@ -62,8 +62,8 @@ public class UserServiceImpl implements UserService {
             userCount = userDao.getUserCount(connection, userName, userRole);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return userCount;
     }
@@ -72,17 +72,17 @@ public class UserServiceImpl implements UserService {
     public List<User> getUserList(String queryUserName, int queryUserRole, int currentPageNo, int pageSize) {
         Connection connection = null;
         List<User> userList = null;
-        System.out.println("queryUserName->"+queryUserName);
-        System.out.println("queryUserRole->"+queryUserRole);
-        System.out.println("currentPageNo->"+currentPageNo);
-        System.out.println("pageSize->"+pageSize);
+        System.out.println("queryUserName->" + queryUserName);
+        System.out.println("queryUserRole->" + queryUserRole);
+        System.out.println("currentPageNo->" + currentPageNo);
+        System.out.println("pageSize->" + pageSize);
         try {
             connection = BaseDao.getConnection();
             userList = userDao.getUserList(connection, queryUserName, queryUserRole, currentPageNo, pageSize);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return userList;
     }
@@ -91,18 +91,18 @@ public class UserServiceImpl implements UserService {
     public boolean add(User user) {
         boolean flag = false;
         Connection connection = null;
-        try{
+        try {
             connection = BaseDao.getConnection();
             connection.setAutoCommit(false);
-            int updateRows = userDao.add(connection,user);
+            int updateRows = userDao.add(connection, user);
             connection.commit();
-            if(updateRows > 0){
-                flag=true;
+            if (updateRows > 0) {
+                flag = true;
                 System.out.println("add success");
-            }else {
+            } else {
                 System.out.println("add failed");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             try {
                 System.out.println("rollback======");
@@ -110,8 +110,8 @@ public class UserServiceImpl implements UserService {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return flag;
     }
@@ -125,24 +125,42 @@ public class UserServiceImpl implements UserService {
             if (userDao.deleteUserById(connection, delId) > 0) {
                 flag = true;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            BaseDao.closeResource(connection,null,null);
+        } finally {
+            BaseDao.closeResource(connection, null, null);
         }
         return flag;
     }
 
+    @Override
+    public User getUserById(String id) {
+        User user = null;
+        Connection connection = null;
+        try {
+            connection = BaseDao.getConnection();
+            user = userDao.getUserById(connection, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            user = null;
+        } finally {
+            BaseDao.closeResource(connection, null, null);
+        }
+        return user;
+
+    }
+
     @Test
-    public void test(){
+    public void test() {
         UserServiceImpl userService = new UserServiceImpl();
         User admin = userService.login("admin", "756");
         System.out.println(admin.getUserPassword());
     }
+
     @Test
-    public void test2(){
+    public void test2() {
         UserServiceImpl userService = new UserServiceImpl();
         int userCount = userService.getUserCount(null, 2);
-        System.out.println("经理:"+userCount);
+        System.out.println("经理:" + userCount);
     }
 }

@@ -55,7 +55,7 @@ $(function(){
 	
 	$(".modifyUser").on("click",function(){
 		var obj = $(this);
-		window.location.href=path+"/user/modify.do?method=modify&uid="+ obj.attr("usercode");
+		window.location.href=path+"/jsp/user.do?method=modify&uid="+ obj.attr("usercode");
 	});
 
 	$('#no').click(function () {

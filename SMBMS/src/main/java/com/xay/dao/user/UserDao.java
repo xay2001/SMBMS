@@ -21,4 +21,6 @@ public interface UserDao {
     int add(Connection connection, User user) throws SQLException;
 
     int deleteUserById(Connection connection, Integer delId) throws SQLException;
+
+    User getUserById(Connection connection, String id) throws SQLException;
 }

@@ -165,9 +165,40 @@ public class UserDaoImpl implements UserDao {
             String sql = "delete from smbms_user where id = ?";
             Object[] params = {delId};
             System.out.println("删除：" + sql);
-            updateRows = BaseDao.execute(connection,sql,params,preparedStatement);
-            BaseDao.closeResource(null,preparedStatement,null);
+            updateRows = BaseDao.execute(connection, sql, params, preparedStatement);
+            BaseDao.closeResource(null, preparedStatement, null);
         }
         return updateRows;
+    }
+
+    @Override
+    public User getUserById(Connection connection, String id) throws SQLException {
+        User user = null;
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        if (null != connection) {
+            String sql = "select u.*,r.roleName as userRoleName from smbms_user u,smbms_role r where u.id=? and u.userRole = r.id";
+            Object[] params = {id};
+            rs = BaseDao.execute(connection, sql, params, rs, pstm);
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUserCode(rs.getString("userCode"));
+                user.setUserName(rs.getString("userName"));
+                user.setUserPassword(rs.getString("userPassword"));
+                user.setGender(rs.getInt("gender"));
+                user.setBirthday(rs.getDate("birthday"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setUserRole(rs.getInt("userRole"));
+                user.setCreatedBy(rs.getInt("createdBy"));
+                user.setCreationDate(rs.getTimestamp("creationDate"));
+                user.setModifyBy(rs.getInt("modifyBy"));
+                user.setModifyDate(rs.getTimestamp("modifyDate"));
+                user.setUserRoleName(rs.getString("userRoleName"));
+            }
+            BaseDao.closeResource(null, pstm, rs);
+        }
+        return user;
     }
 }

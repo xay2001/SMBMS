@@ -36,6 +36,8 @@ public class UserServlet extends HttpServlet {
             this.add(req, resp);
         } else if (method.equals("deluser") && method != null) {
             this.deluser(req,resp);
+        } else if (method.equals("modify") && method!=null) {
+            this.getUserById(req,resp,"usermodify.jsp");
         }
     }
 
@@ -238,5 +240,16 @@ public class UserServlet extends HttpServlet {
         writer.write(JSONArray.toJSONString(resultMap));
         writer.flush();
         writer.close();
+    }
+    //修改用户
+    public void getUserById(HttpServletRequest req, HttpServletResponse resp,String url)throws ServletException, IOException{
+        String id = req.getParameter("uid");
+        if(!StringUtils.isNullOrEmpty(id)){
+            //调用后台方法得到user对象
+            UserServiceImpl userService = new UserServiceImpl();
+            User user = userService.getUserById(id);
+            req.setAttribute("user",user);
+            req.getRequestDispatcher(url).forward(req,resp);
+        }
     }
 }

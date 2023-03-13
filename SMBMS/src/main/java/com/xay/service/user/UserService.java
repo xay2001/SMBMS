@@ -20,4 +20,6 @@ public interface UserService {
     boolean add(User user);
 
     boolean deleteUserById(Integer delId);
+
+    User getUserById(String id);
 }
